@@ -1,0 +1,800 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\yunmeilu\Box\MTF police\No opinion project\Code\Decomp_output.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}16 Oct 2026, 11:01:35
+
+{com}. do "C:\Users\yunmeilu\AppData\Local\Temp\STD6ecc_00000a.tmp"
+{txt}
+{com}. use "C:\Users\yunmeilu\Box\MTF police\MTF police\Data\12th\mtf_form3_12th_all.dta", replace
+{txt}(Written by R.              )
+
+{com}. 
+. *gen race3=race_f
+. *replace race3=3 if race_f==.
+. recode race_f (2=1 "White") (1=2 "Black") (missing=3 "Other"), gen(race3)
+{txt}(122,607 differences between {bf:race_f} and {bf:race3})
+
+{com}. 
+. recode sch_c1 (1=0 "none") (2/3=1 "missed 1-2 days")(4/7=2 "missed 3+days"), gen (sch_c3)
+{txt}(122,607 differences between {bf:sch_c1} and {bf:sch_c3})
+
+{com}. recode p_edu_n (1/2=2 "lower than high sch") (3/4=1 "high sch")(5/6=0 "college and above"), gen (p_edu_n3)
+{txt}(107,056 differences between {bf:p_edu_n} and {bf:p_edu_n3})
+
+{com}. 
+. recode year (1976/1985=1 "Cohort76-85") (2009/2018=2 "Cohort09-18") (else=.), gen(cohort2)
+{txt}(122,607 differences between {bf:year} and {bf:cohort2})
+
+{com}. 
+. gen vic=.
+{txt}(122,607 missing values generated)
+
+{com}. replace vic=0 if any_p=="No"
+{txt}(71,172 real changes made)
+
+{com}. replace vic=1 if any_p=="Yes"
+{txt}(51,435 real changes made)
+
+{com}. 
+. egen region2 = group(region1)
+{txt}
+{com}. 
+. *logistic regression first
+. svyset [pweight=weight]
+
+{txt}Sampling weights:{col 19}{res}weight
+             {txt}VCE:{col 19}{res}linearized
+{p2colset 1 19 19 2}{...}
+{txt}{p2col:{space 6}Subpop. df:}{res}off{res}{p_end}
+{p2colreset}{...}
+     {txt}Single unit:{col 19}{res}missing
+        {txt}Strata 1:{col 19}<one>
+ Sampling unit 1:{col 19}<observations>
+           FPC 1:{col 19}<zero>
+{p2colreset}{...}
+
+{com}. 
+. *Table 2 Output
+. svy: logit pol_p1_no i.sex1 i.race3 i.rural5 i.ideo2 i.sch_c3 i.p_edu_n3 vic i.region2 happy1_n care_soc1_n if cohort2==1
+{res}{txt}(running {bf:logit} on estimation sample)
+{res}
+{txt}Survey: Logistic regression
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 53}{lalign 15:Number of obs}{col 68} = {res}{ralign 8:29,305}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:29,305}{txt}{col 53}{lalign 15:Population size}{col 68} = {res}{ralign 8:28,722.6}
+{txt}{col 53}{lalign 15:Design df}{col 68} = {res}{ralign 8:29,304}
+{txt}{col 53}{lalign 15:F({res:21}, {res:29284})}{col 68} = {res}{ralign 8:22.96}
+{txt}{col 53}{lalign 15:Prob > F}{col 68} = {res}{ralign 8:0.0000}
+
+{txt}{hline 32}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 33}{c |}{col 45}  Linearized
+{col 1}                      pol_p1_no{col 33}{c |} Coefficient{col 45}  std. err.{col 57}      t{col 65}   P>|t|{col 73}     [95% con{col 86}f. interval]
+{hline 32}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 27}sex1 {c |}
+{space 25}Women  {c |}{col 33}{res}{space 2} .1757326{col 45}{space 2} .0682553{col 56}{space 1}    2.57{col 65}{space 3}0.010{col 73}{space 4} .0419492{col 86}{space 3}  .309516
+{txt}{space 31} {c |}
+{space 26}race3 {c |}
+{space 25}Black  {c |}{col 33}{res}{space 2} .7490097{col 45}{space 2} .0935911{col 56}{space 1}    8.00{col 65}{space 3}0.000{col 73}{space 4} .5655669{col 86}{space 3} .9324525
+{txt}{space 25}Other  {c |}{col 33}{res}{space 2} .4507616{col 45}{space 2} .1093133{col 56}{space 1}    4.12{col 65}{space 3}0.000{col 73}{space 4} .2365026{col 86}{space 3} .6650206
+{txt}{space 31} {c |}
+{space 25}rural5 {c |}
+{space 20}small city  {c |}{col 33}{res}{space 2} .1137731{col 45}{space 2} .0987846{col 56}{space 1}    1.15{col 65}{space 3}0.249{col 73}{space 4}-.0798492{col 86}{space 3} .3073954
+{txt}{space 2}medium city (50,000-100,000)  {c |}{col 33}{res}{space 2} -.077145{col 45}{space 2} .1046356{col 56}{space 1}   -0.74{col 65}{space 3}0.461{col 73}{space 4}-.2822355{col 86}{space 3} .1279454
+{txt}{space 2}large city (100,000-500,000)  {c |}{col 33}{res}{space 2}-.0846257{col 45}{space 2} .1114479{col 56}{space 1}   -0.76{col 65}{space 3}0.448{col 73}{space 4}-.3030686{col 86}{space 3} .1338172
+{txt}very large city (over 500,000)  {c |}{col 33}{res}{space 2} -.042102{col 45}{space 2} .1367493{col 56}{space 1}   -0.31{col 65}{space 3}0.758{col 73}{space 4}-.3101367{col 86}{space 3} .2259328
+{txt}{space 31} {c |}
+{space 26}ideo2 {c |}
+{space 22}moderate  {c |}{col 33}{res}{space 2}-.3483563{col 45}{space 2} .1171734{col 56}{space 1}   -2.97{col 65}{space 3}0.003{col 73}{space 4}-.5780214{col 86}{space 3}-.1186912
+{txt}{space 27}lib  {c |}{col 33}{res}{space 2}-.1873662{col 45}{space 2} .1275896{col 56}{space 1}   -1.47{col 65}{space 3}0.142{col 73}{space 4}-.4374475{col 86}{space 3} .0627152
+{txt}{space 23}radical  {c |}{col 33}{res}{space 2} .4727211{col 45}{space 2} .2005006{col 56}{space 1}    2.36{col 65}{space 3}0.018{col 73}{space 4}  .079731{col 86}{space 3} .8657112
+{txt}{space 20}don't know  {c |}{col 33}{res}{space 2} .6738736{col 45}{space 2} .1034478{col 56}{space 1}    6.51{col 65}{space 3}0.000{col 73}{space 4} .4711112{col 86}{space 3}  .876636
+{txt}{space 31} {c |}
+{space 25}sch_c3 {c |}
+{space 15}missed 1-2 days  {c |}{col 33}{res}{space 2}-.1554909{col 45}{space 2} .0920683{col 56}{space 1}   -1.69{col 65}{space 3}0.091{col 73}{space 4}-.3359488{col 86}{space 3} .0249671
+{txt}{space 17}missed 3+days  {c |}{col 33}{res}{space 2} .1954782{col 45}{space 2} .1060347{col 56}{space 1}    1.84{col 65}{space 3}0.065{col 73}{space 4}-.0123546{col 86}{space 3}  .403311
+{txt}{space 31} {c |}
+{space 23}p_edu_n3 {c |}
+{space 22}high sch  {c |}{col 33}{res}{space 2} .1138622{col 45}{space 2} .0770733{col 56}{space 1}    1.48{col 65}{space 3}0.140{col 73}{space 4}-.0372049{col 86}{space 3} .2649294
+{txt}{space 11}lower than high sch  {c |}{col 33}{res}{space 2} .2520044{col 45}{space 2} .1058139{col 56}{space 1}    2.38{col 65}{space 3}0.017{col 73}{space 4} .0446045{col 86}{space 3} .4594043
+{txt}{space 31} {c |}
+{space 28}vic {c |}{col 33}{res}{space 2}-.1582753{col 45}{space 2} .0707954{col 56}{space 1}   -2.24{col 65}{space 3}0.025{col 73}{space 4}-.2970374{col 86}{space 3}-.0195131
+{txt}{space 31} {c |}
+{space 24}region2 {c |}
+{space 29}2  {c |}{col 33}{res}{space 2}  .027998{col 45}{space 2} .0921144{col 56}{space 1}    0.30{col 65}{space 3}0.761{col 73}{space 4}-.1525503{col 86}{space 3} .2085463
+{txt}{space 29}3  {c |}{col 33}{res}{space 2} -.023153{col 45}{space 2} .0905688{col 56}{space 1}   -0.26{col 65}{space 3}0.798{col 73}{space 4}-.2006719{col 86}{space 3} .1543658
+{txt}{space 29}4  {c |}{col 33}{res}{space 2} .0235979{col 45}{space 2} .1056679{col 56}{space 1}    0.22{col 65}{space 3}0.823{col 73}{space 4} -.183516{col 86}{space 3} .2307118
+{txt}{space 31} {c |}
+{space 23}happy1_n {c |}{col 33}{res}{space 2}-.1712324{col 45}{space 2} .0616812{col 56}{space 1}   -2.78{col 65}{space 3}0.006{col 73}{space 4}-.2921303{col 86}{space 3}-.0503346
+{txt}{space 20}care_soc1_n {c |}{col 33}{res}{space 2}-.3605811{col 45}{space 2} .0455176{col 56}{space 1}   -7.92{col 65}{space 3}0.000{col 73}{space 4}-.4497976{col 86}{space 3}-.2713646
+{txt}{space 26}_cons {c |}{col 33}{res}{space 2}-2.113681{col 45}{space 2} .2440212{col 56}{space 1}   -8.66{col 65}{space 3}0.000{col 73}{space 4}-2.591973{col 86}{space 3}-1.635388
+{txt}{hline 32}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store m1, title("C1980")
+{txt}
+{com}. svy: logit pol_p1_no i.sex1 i.race3 i.rural5 i.ideo2 i.sch_c3 i.p_edu_n3 vic i.region2 happy1_n care_soc1_n if cohort2==2
+{res}{txt}(running {bf:logit} on estimation sample)
+{res}
+{txt}Survey: Logistic regression
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 51}{lalign 15:Number of obs}{col 66} = {res}{ralign 10:18,287}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:18,287}{txt}{col 51}{lalign 15:Population size}{col 66} = {res}{ralign 10:18,139.936}
+{txt}{col 51}{lalign 15:Design df}{col 66} = {res}{ralign 10:18,286}
+{txt}{col 51}{lalign 15:F({res:21}, {res:18266})}{col 66} = {res}{ralign 10:32.41}
+{txt}{col 51}{lalign 15:Prob > F}{col 66} = {res}{ralign 10:0.0000}
+
+{txt}{hline 32}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 33}{c |}{col 45}  Linearized
+{col 1}                      pol_p1_no{col 33}{c |} Coefficient{col 45}  std. err.{col 57}      t{col 65}   P>|t|{col 73}     [95% con{col 86}f. interval]
+{hline 32}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 27}sex1 {c |}
+{space 25}Women  {c |}{col 33}{res}{space 2} .3910874{col 45}{space 2} .0539882{col 56}{space 1}    7.24{col 65}{space 3}0.000{col 73}{space 4} .2852656{col 86}{space 3} .4969093
+{txt}{space 31} {c |}
+{space 26}race3 {c |}
+{space 25}Black  {c |}{col 33}{res}{space 2} .4000241{col 45}{space 2} .0851664{col 56}{space 1}    4.70{col 65}{space 3}0.000{col 73}{space 4}   .23309{col 86}{space 3} .5669581
+{txt}{space 25}Other  {c |}{col 33}{res}{space 2} .1854291{col 45}{space 2} .0660198{col 56}{space 1}    2.81{col 65}{space 3}0.005{col 73}{space 4} .0560242{col 86}{space 3}  .314834
+{txt}{space 31} {c |}
+{space 25}rural5 {c |}
+{space 20}small city  {c |}{col 33}{res}{space 2} .1132905{col 45}{space 2} .0836571{col 56}{space 1}    1.35{col 65}{space 3}0.176{col 73}{space 4}-.0506853{col 86}{space 3} .2772662
+{txt}{space 2}medium city (50,000-100,000)  {c |}{col 33}{res}{space 2} .0650222{col 45}{space 2} .0858186{col 56}{space 1}    0.76{col 65}{space 3}0.449{col 73}{space 4}-.1031904{col 86}{space 3} .2332348
+{txt}{space 2}large city (100,000-500,000)  {c |}{col 33}{res}{space 2} .1900473{col 45}{space 2} .0935333{col 56}{space 1}    2.03{col 65}{space 3}0.042{col 73}{space 4} .0067132{col 86}{space 3} .3733813
+{txt}very large city (over 500,000)  {c |}{col 33}{res}{space 2} .1165284{col 45}{space 2}  .113303{col 56}{space 1}    1.03{col 65}{space 3}0.304{col 73}{space 4}-.1055561{col 86}{space 3}  .338613
+{txt}{space 31} {c |}
+{space 26}ideo2 {c |}
+{space 22}moderate  {c |}{col 33}{res}{space 2}-.0097813{col 45}{space 2} .0979607{col 56}{space 1}   -0.10{col 65}{space 3}0.920{col 73}{space 4}-.2017934{col 86}{space 3} .1822309
+{txt}{space 27}lib  {c |}{col 33}{res}{space 2} .2288034{col 45}{space 2} .1011179{col 56}{space 1}    2.26{col 65}{space 3}0.024{col 73}{space 4} .0306028{col 86}{space 3} .4270039
+{txt}{space 23}radical  {c |}{col 33}{res}{space 2} .6513416{col 45}{space 2} .2277615{col 56}{space 1}    2.86{col 65}{space 3}0.004{col 73}{space 4} .2049078{col 86}{space 3} 1.097775
+{txt}{space 20}don't know  {c |}{col 33}{res}{space 2} .8842524{col 45}{space 2} .0847242{col 56}{space 1}   10.44{col 65}{space 3}0.000{col 73}{space 4}  .718185{col 86}{space 3}  1.05032
+{txt}{space 31} {c |}
+{space 25}sch_c3 {c |}
+{space 15}missed 1-2 days  {c |}{col 33}{res}{space 2} -.121025{col 45}{space 2} .0678496{col 56}{space 1}   -1.78{col 65}{space 3}0.074{col 73}{space 4}-.2540165{col 86}{space 3} .0119665
+{txt}{space 17}missed 3+days  {c |}{col 33}{res}{space 2} .1856458{col 45}{space 2} .0877543{col 56}{space 1}    2.12{col 65}{space 3}0.034{col 73}{space 4} .0136392{col 86}{space 3} .3576525
+{txt}{space 31} {c |}
+{space 23}p_edu_n3 {c |}
+{space 22}high sch  {c |}{col 33}{res}{space 2}-.0536884{col 45}{space 2} .0568924{col 56}{space 1}   -0.94{col 65}{space 3}0.345{col 73}{space 4}-.1652028{col 86}{space 3} .0578259
+{txt}{space 11}lower than high sch  {c |}{col 33}{res}{space 2} .0216158{col 45}{space 2} .0964899{col 56}{space 1}    0.22{col 65}{space 3}0.823{col 73}{space 4}-.1675136{col 86}{space 3} .2107451
+{txt}{space 31} {c |}
+{space 28}vic {c |}{col 33}{res}{space 2}-.2261533{col 45}{space 2} .0561944{col 56}{space 1}   -4.02{col 65}{space 3}0.000{col 73}{space 4}-.3362996{col 86}{space 3} -.116007
+{txt}{space 31} {c |}
+{space 24}region2 {c |}
+{space 29}2  {c |}{col 33}{res}{space 2}-.0183388{col 45}{space 2} .0795203{col 56}{space 1}   -0.23{col 65}{space 3}0.818{col 73}{space 4}-.1742061{col 86}{space 3} .1375284
+{txt}{space 29}3  {c |}{col 33}{res}{space 2} .0489592{col 45}{space 2} .0705254{col 56}{space 1}    0.69{col 65}{space 3}0.488{col 73}{space 4}-.0892771{col 86}{space 3} .1871956
+{txt}{space 29}4  {c |}{col 33}{res}{space 2}-.0916728{col 45}{space 2} .0845589{col 56}{space 1}   -1.08{col 65}{space 3}0.278{col 73}{space 4} -.257416{col 86}{space 3} .0740705
+{txt}{space 31} {c |}
+{space 23}happy1_n {c |}{col 33}{res}{space 2}-.0535991{col 45}{space 2} .0440322{col 56}{space 1}   -1.22{col 65}{space 3}0.224{col 73}{space 4}-.1399064{col 86}{space 3} .0327082
+{txt}{space 20}care_soc1_n {c |}{col 33}{res}{space 2}-.4046277{col 45}{space 2} .0304964{col 56}{space 1}  -13.27{col 65}{space 3}0.000{col 73}{space 4}-.4644036{col 86}{space 3}-.3448519
+{txt}{space 26}_cons {c |}{col 33}{res}{space 2}-1.272912{col 45}{space 2} .1756917{col 56}{space 1}   -7.25{col 65}{space 3}0.000{col 73}{space 4}-1.617284{col 86}{space 3}-.9285394
+{txt}{hline 32}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store m2, title("C2015")
+{txt}
+{com}. cd "C:\Users\yunmeilu\Box\MTF police\No opinion project\output"
+{res}C:\Users\yunmeilu\Box\MTF police\No opinion project\output
+{txt}
+{com}. esttab m1 m2 using logit_10.15.26.csv, cells(b(star fmt(3)) se(par fmt(3))) stats(N, fmt(a)) 
+{res}{err}{p 0 4 2}
+file {bf:{err}logit_10.15.26.csv}
+already exists
+{p_end}
+{txt}{search r(602), local:r(602);}
+
+end of do-file
+
+{search r(602), local:r(602);}
+
+{com}. do "C:\Users\yunmeilu\AppData\Local\Temp\STD6ecc_00000b.tmp"
+{txt}
+{com}. ********************************************************************************
+. *Get Read for Decomposition Analysis
+. *oaxaca deocmposition: recode categorical variable
+. tabulate race3, generate(race_in) nofreq
+{txt}
+{com}. tabulate rural5, generate(rural_in) nofreq
+{txt}
+{com}. tabulate ideo2, generate(ideo_in) nofreq
+{txt}
+{com}. tabulate sch_c3, generate(sch_in) nofreq
+{txt}
+{com}. tabulate p_edu_n3, generate(pedu_in) nofreq
+{txt}
+{com}. tabulate region1, generate(region_in) nofreq
+{txt}
+{com}. 
+. 
+. ssc install oaxaca, replace 
+{txt}checking {hilite:oaxaca} consistency and verifying not already installed...
+all files already exist and are up to date.
+
+{com}. svyset [pweight=weight]
+
+{txt}Sampling weights:{col 19}{res}weight
+             {txt}VCE:{col 19}{res}linearized
+{p2colset 1 19 19 2}{...}
+{txt}{p2col:{space 6}Subpop. df:}{res}off{res}{p_end}
+{p2colreset}{...}
+     {txt}Single unit:{col 19}{res}missing
+        {txt}Strata 1:{col 19}<one>
+ Sampling unit 1:{col 19}<observations>
+           FPC 1:{col 19}<zero>
+{p2colreset}{...}
+
+{com}. 
+. *Table 3 Output: 
+. oaxaca pol_p1_no (race: normalize(b.race_in1 race_in2 race_in3)) sex1 rural5 sch_c3 p_edu_n vic (ideo: normalize(b.ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5)) (region: normalize(b.region_in1 region_in2 region_in3 region_in4)) happy1_n care_soc1_n, by (cohort2) svy logit threefold(reverse) detail
+{res}{txt}(normalized: race_in1 race_in2 race_in3, ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5, region_in1 region_in2 region_in3 region_in4)
+{res}
+{txt}Blinder-Oaxaca decomposition
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 49}{lalign 17:Number of obs}{col 66} = {res}{ralign 10:47,592}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:47,592}{txt}{col 49}{lalign 17:Population size}{col 66} = {res}{ralign 10:46,862.536}
+{txt}{col 49}{lalign 17:Design df}{col 66} = {res}{ralign 10:47,591}
+{txt}{col 49}Model{col 67}={col 69}     {res}logit
+{txt}Group 1: cohort2 = {res}1{txt}{col 49}N of obs 1{col 67}={col 69}{res}    29,305
+{txt}Group 2: cohort2 = {res}2{txt}{col 49}N of obs 2{col 67}={col 69}{res}    18,287
+
+{txt}   endowments: (X1 - X2) * {bf:b1}
+ coefficients: {bf:X1} * (b1 - b2)
+  interaction: (X1 - X2) * (b2 - b1)
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}  Linearized
+{col 1}   pol_p1_no{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}overall      {txt}{c |}
+{space 5}group_1 {c |}{col 14}{res}{space 2} .0420923{col 26}{space 2} .0013237{col 37}{space 1}   31.80{col 46}{space 3}0.000{col 54}{space 4} .0394979{col 67}{space 3} .0446867
+{txt}{space 5}group_2 {c |}{col 14}{res}{space 2} .1356233{col 26}{space 2} .0029763{col 37}{space 1}   45.57{col 46}{space 3}0.000{col 54}{space 4} .1297897{col 67}{space 3} .1414569
+{txt}{space 2}difference {c |}{col 14}{res}{space 2} -.093531{col 26}{space 2} .0032574{col 37}{space 1}  -28.71{col 46}{space 3}0.000{col 54}{space 4}-.0999155{col 67}{space 3}-.0871465
+{txt}{space 2}endowments {c |}{col 14}{res}{space 2}-.0073184{col 26}{space 2} .0015832{col 37}{space 1}   -4.62{col 46}{space 3}0.000{col 54}{space 4}-.0104215{col 67}{space 3}-.0042154
+{txt}coefficients {c |}{col 14}{res}{space 2}-.0765746{col 26}{space 2} .0036284{col 37}{space 1}  -21.10{col 46}{space 3}0.000{col 54}{space 4}-.0836862{col 67}{space 3} -.069463
+{txt}{space 1}interaction {c |}{col 14}{res}{space 2} -.009638{col 26}{space 2} .0026866{col 37}{space 1}   -3.59{col 46}{space 3}0.000{col 54}{space 4}-.0149038{col 67}{space 3}-.0043723
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}endowments   {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0046025{col 26}{space 2} .0012572{col 37}{space 1}   -3.66{col 46}{space 3}0.000{col 54}{space 4}-.0070666{col 67}{space 3}-.0021385
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-5.29e-06{col 26}{space 2} .0000467{col 37}{space 1}   -0.11{col 46}{space 3}0.910{col 54}{space 4}-.0000969{col 67}{space 3} .0000863
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} .0001654{col 26}{space 2} .0001423{col 37}{space 1}    1.16{col 46}{space 3}0.245{col 54}{space 4}-.0001136{col 67}{space 3} .0004444
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000137{col 26}{space 2} .0000227{col 37}{space 1}   -0.60{col 46}{space 3}0.546{col 54}{space 4}-.0000583{col 67}{space 3} .0000308
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} .0017729{col 26}{space 2} .0006129{col 37}{space 1}    2.89{col 46}{space 3}0.004{col 54}{space 4} .0005715{col 67}{space 3} .0029742
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0000843{col 26}{space 2} .0000559{col 37}{space 1}    1.51{col 46}{space 3}0.132{col 54}{space 4}-.0000253{col 67}{space 3}  .000194
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0038771{col 26}{space 2} .0004451{col 37}{space 1}   -8.71{col 46}{space 3}0.000{col 54}{space 4}-.0047496{col 67}{space 3}-.0030047
+{txt}{space 6}region {c |}{col 14}{res}{space 2} .0000699{col 26}{space 2} .0004438{col 37}{space 1}    0.16{col 46}{space 3}0.875{col 54}{space 4}   -.0008{col 67}{space 3} .0009398
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2} .0000933{col 26}{space 2} .0000632{col 37}{space 1}    1.47{col 46}{space 3}0.140{col 54}{space 4}-.0000307{col 67}{space 3} .0002172
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}-.0010056{col 26}{space 2} .0002207{col 37}{space 1}   -4.56{col 46}{space 3}0.000{col 54}{space 4}-.0014382{col 67}{space 3} -.000573
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}coefficients {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0085581{col 26}{space 2} .0030197{col 37}{space 1}   -2.83{col 46}{space 3}0.005{col 54}{space 4}-.0144767{col 67}{space 3}-.0026394
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0216926{col 26}{space 2} .0085806{col 37}{space 1}   -2.53{col 46}{space 3}0.011{col 54}{space 4}-.0385107{col 67}{space 3}-.0048744
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2}-.0110211{col 26}{space 2} .0061647{col 37}{space 1}   -1.79{col 46}{space 3}0.074{col 54}{space 4} -.023104{col 67}{space 3} .0010618
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000455{col 26}{space 2} .0016124{col 37}{space 1}   -0.03{col 46}{space 3}0.977{col 54}{space 4}-.0032059{col 67}{space 3} .0031148
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0237819{col 26}{space 2} .0083368{col 37}{space 1}   -2.85{col 46}{space 3}0.004{col 54}{space 4}-.0401221{col 67}{space 3}-.0074417
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0016818{col 26}{space 2} .0021945{col 37}{space 1}    0.77{col 46}{space 3}0.443{col 54}{space 4}-.0026194{col 67}{space 3}  .005983
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0019205{col 26}{space 2} .0032563{col 37}{space 1}   -0.59{col 46}{space 3}0.555{col 54}{space 4} -.008303{col 67}{space 3} .0044619
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0010157{col 26}{space 2} .0007386{col 37}{space 1}   -1.38{col 46}{space 3}0.169{col 54}{space 4}-.0024633{col 67}{space 3} .0004319
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}-.0156148{col 26}{space 2} .0100887{col 37}{space 1}   -1.55{col 46}{space 3}0.122{col 54}{space 4}-.0353887{col 67}{space 3} .0041591
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}  .009855{col 26}{space 2} .0114804{col 37}{space 1}    0.86{col 46}{space 3}0.391{col 54}{space 4}-.0126468{col 67}{space 3} .0323567
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.0044613{col 26}{space 2} .0206669{col 37}{space 1}   -0.22{col 46}{space 3}0.829{col 54}{space 4}-.0449687{col 67}{space 3} .0360461
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}interaction  {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0569607{col 26}{space 2} .2370663{col 37}{space 1}   -0.24{col 46}{space 3}0.810{col 54}{space 4}-.5216139{col 67}{space 3} .4076925
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2} .0001571{col 26}{space 2} .0015855{col 37}{space 1}    0.10{col 46}{space 3}0.921{col 54}{space 4}-.0029506{col 67}{space 3} .0032648
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} .0077228{col 26}{space 2} .0354502{col 37}{space 1}    0.22{col 46}{space 3}0.828{col 54}{space 4}-.0617601{col 67}{space 3} .0772058
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2} .0000154{col 26}{space 2} .0005493{col 37}{space 1}    0.03{col 46}{space 3}0.978{col 54}{space 4}-.0010612{col 67}{space 3}  .001092
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} .0508557{col 26}{space 2} .2435598{col 37}{space 1}    0.21{col 46}{space 3}0.835{col 54}{space 4}-.4265248{col 67}{space 3} .5282363
+{txt}{space 9}vic {c |}{col 14}{res}{space 2}-.0008589{col 26}{space 2}  .004066{col 37}{space 1}   -0.21{col 46}{space 3}0.833{col 54}{space 4}-.0088284{col 67}{space 3} .0071106
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0142821{col 26}{space 2} .0627433{col 37}{space 1}   -0.23{col 46}{space 3}0.820{col 54}{space 4}-.1372598{col 67}{space 3} .1086955
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0008817{col 26}{space 2} .0132852{col 37}{space 1}   -0.07{col 46}{space 3}0.947{col 54}{space 4}-.0269208{col 67}{space 3} .0251574
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}  .001491{col 26}{space 2} .0069972{col 37}{space 1}    0.21{col 46}{space 3}0.831{col 54}{space 4}-.0122236{col 67}{space 3} .0152057
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2} .0031034{col 26}{space 2} .0151354{col 37}{space 1}    0.21{col 46}{space 3}0.838{col 54}{space 4}-.0265623{col 67}{space 3} .0327691
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+race: race_in1 race_in2 race_in3
+ideo: ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5
+region: region_in1 region_in2 region_in3 region_in4
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\yunmeilu\AppData\Local\Temp\STD6ecc_00000c.tmp"
+{txt}
+{com}. ********************************************************************************
+. *Supplemental Analysis Using Cohort 2 as reference
+. *Appendix C Output: 
+. oaxaca pol_p1_no (race: normalize(b.race_in1 race_in2 race_in3)) sex1 rural5 sch_c3 p_edu_n vic (ideo: normalize(b.ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5)) (region: normalize(b.region_in1 region_in2 region_in3 region_in4)) happy1_n care_soc1_n, by (cohort2) svy logit threefold detail
+{res}{txt}(normalized: race_in1 race_in2 race_in3, ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5, region_in1 region_in2 region_in3 region_in4)
+{res}
+{txt}Blinder-Oaxaca decomposition
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 49}{lalign 17:Number of obs}{col 66} = {res}{ralign 10:47,592}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:47,592}{txt}{col 49}{lalign 17:Population size}{col 66} = {res}{ralign 10:46,862.536}
+{txt}{col 49}{lalign 17:Design df}{col 66} = {res}{ralign 10:47,591}
+{txt}{col 49}Model{col 67}={col 69}     {res}logit
+{txt}Group 1: cohort2 = {res}1{txt}{col 49}N of obs 1{col 67}={col 69}{res}    29,305
+{txt}Group 2: cohort2 = {res}2{txt}{col 49}N of obs 2{col 67}={col 69}{res}    18,287
+
+{txt}   endowments: (X1 - X2) * {bf:b2}
+ coefficients: {bf:X2} * (b1 - b2)
+  interaction: (X1 - X2) * (b1 - b2)
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}  Linearized
+{col 1}   pol_p1_no{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}overall      {txt}{c |}
+{space 5}group_1 {c |}{col 14}{res}{space 2} .0420923{col 26}{space 2} .0013237{col 37}{space 1}   31.80{col 46}{space 3}0.000{col 54}{space 4} .0394979{col 67}{space 3} .0446867
+{txt}{space 5}group_2 {c |}{col 14}{res}{space 2} .1356233{col 26}{space 2} .0029763{col 37}{space 1}   45.57{col 46}{space 3}0.000{col 54}{space 4} .1297897{col 67}{space 3} .1414569
+{txt}{space 2}difference {c |}{col 14}{res}{space 2} -.093531{col 26}{space 2} .0032574{col 37}{space 1}  -28.71{col 46}{space 3}0.000{col 54}{space 4}-.0999155{col 67}{space 3}-.0871465
+{txt}{space 2}endowments {c |}{col 14}{res}{space 2}-.0169565{col 26}{space 2} .0022752{col 37}{space 1}   -7.45{col 46}{space 3}0.000{col 54}{space 4}-.0214159{col 67}{space 3}-.0124971
+{txt}coefficients {c |}{col 14}{res}{space 2}-.0862126{col 26}{space 2} .0036263{col 37}{space 1}  -23.77{col 46}{space 3}0.000{col 54}{space 4}-.0933203{col 67}{space 3}-.0791049
+{txt}{space 1}interaction {c |}{col 14}{res}{space 2}  .009638{col 26}{space 2} .0026866{col 37}{space 1}    3.59{col 46}{space 3}0.000{col 54}{space 4} .0043723{col 67}{space 3} .0149038
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}endowments   {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0053131{col 26}{space 2} .0016716{col 37}{space 1}   -3.18{col 46}{space 3}0.001{col 54}{space 4}-.0085895{col 67}{space 3}-.0020367
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0000295{col 26}{space 2} .0002602{col 37}{space 1}   -0.11{col 46}{space 3}0.910{col 54}{space 4}-.0005395{col 67}{space 3} .0004805
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2}-.0004057{col 26}{space 2} .0002963{col 37}{space 1}   -1.37{col 46}{space 3}0.171{col 54}{space 4}-.0009864{col 67}{space 3} .0001751
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000353{col 26}{space 2} .0000498{col 37}{space 1}   -0.71{col 46}{space 3}0.478{col 54}{space 4}-.0001329{col 67}{space 3} .0000623
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} -.000993{col 26}{space 2} .0012015{col 37}{space 1}   -0.83{col 46}{space 3}0.409{col 54}{space 4}-.0033479{col 67}{space 3} .0013619
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0002973{col 26}{space 2} .0001634{col 37}{space 1}    1.82{col 46}{space 3}0.069{col 54}{space 4}-.0000228{col 67}{space 3} .0006175
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0080186{col 26}{space 2} .0009146{col 37}{space 1}   -8.77{col 46}{space 3}0.000{col 54}{space 4}-.0098111{col 67}{space 3} -.006226
+{txt}{space 6}region {c |}{col 14}{res}{space 2} .0002644{col 26}{space 2}  .000896{col 37}{space 1}    0.30{col 46}{space 3}0.768{col 54}{space 4}-.0014918{col 67}{space 3} .0020205
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2} .0000723{col 26}{space 2}  .000072{col 37}{space 1}    1.00{col 46}{space 3}0.315{col 54}{space 4}-.0000689{col 67}{space 3} .0002135
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}-.0027953{col 26}{space 2} .0005082{col 37}{space 1}   -5.50{col 46}{space 3}0.000{col 54}{space 4}-.0037914{col 67}{space 3}-.0017992
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}coefficients {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0060421{col 26}{space 2} .0021299{col 37}{space 1}   -2.84{col 46}{space 3}0.005{col 54}{space 4}-.0102167{col 67}{space 3}-.0018676
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0246086{col 26}{space 2} .0097068{col 37}{space 1}   -2.54{col 46}{space 3}0.011{col 54}{space 4} -.043634{col 67}{space 3}-.0055832
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} -.012994{col 26}{space 2} .0072577{col 37}{space 1}   -1.79{col 46}{space 3}0.073{col 54}{space 4}-.0272191{col 67}{space 3} .0012312
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000526{col 26}{space 2} .0018634{col 37}{space 1}   -0.03{col 46}{space 3}0.977{col 54}{space 4} -.003705{col 67}{space 3} .0035998
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0302375{col 26}{space 2} .0106078{col 37}{space 1}   -2.85{col 46}{space 3}0.004{col 54}{space 4}-.0510288{col 67}{space 3}-.0094461
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0019623{col 26}{space 2} .0025612{col 37}{space 1}    0.77{col 46}{space 3}0.444{col 54}{space 4}-.0030577{col 67}{space 3} .0069824
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0012595{col 26}{space 2} .0038769{col 37}{space 1}   -0.32{col 46}{space 3}0.745{col 54}{space 4}-.0088582{col 67}{space 3} .0063392
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0010951{col 26}{space 2} .0008386{col 37}{space 1}   -1.31{col 46}{space 3}0.192{col 54}{space 4}-.0027388{col 67}{space 3} .0005486
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}-.0178024{col 26}{space 2} .0115001{col 37}{space 1}   -1.55{col 46}{space 3}0.122{col 54}{space 4}-.0403427{col 67}{space 3} .0047379
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2} .0109756{col 26}{space 2}  .012799{col 37}{space 1}    0.86{col 46}{space 3}0.391{col 54}{space 4}-.0141106{col 67}{space 3} .0360618
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.0050589{col 26}{space 2} .0234362{col 37}{space 1}   -0.22{col 46}{space 3}0.829{col 54}{space 4}-.0509941{col 67}{space 3} .0408764
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}interaction  {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2} .0569607{col 26}{space 2} .2370663{col 37}{space 1}    0.24{col 46}{space 3}0.810{col 54}{space 4}-.4076925{col 67}{space 3} .5216139
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0001571{col 26}{space 2} .0015855{col 37}{space 1}   -0.10{col 46}{space 3}0.921{col 54}{space 4}-.0032648{col 67}{space 3} .0029506
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2}-.0077228{col 26}{space 2} .0354502{col 37}{space 1}   -0.22{col 46}{space 3}0.828{col 54}{space 4}-.0772058{col 67}{space 3} .0617601
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000154{col 26}{space 2} .0005493{col 37}{space 1}   -0.03{col 46}{space 3}0.978{col 54}{space 4} -.001092{col 67}{space 3} .0010612
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0508557{col 26}{space 2} .2435598{col 37}{space 1}   -0.21{col 46}{space 3}0.835{col 54}{space 4}-.5282363{col 67}{space 3} .4265248
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0008589{col 26}{space 2}  .004066{col 37}{space 1}    0.21{col 46}{space 3}0.833{col 54}{space 4}-.0071106{col 67}{space 3} .0088284
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2} .0142821{col 26}{space 2} .0627433{col 37}{space 1}    0.23{col 46}{space 3}0.820{col 54}{space 4}-.1086955{col 67}{space 3} .1372598
+{txt}{space 6}region {c |}{col 14}{res}{space 2} .0008817{col 26}{space 2} .0132852{col 37}{space 1}    0.07{col 46}{space 3}0.947{col 54}{space 4}-.0251574{col 67}{space 3} .0269208
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2} -.001491{col 26}{space 2} .0069972{col 37}{space 1}   -0.21{col 46}{space 3}0.831{col 54}{space 4}-.0152057{col 67}{space 3} .0122236
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}-.0031034{col 26}{space 2} .0151354{col 37}{space 1}   -0.21{col 46}{space 3}0.838{col 54}{space 4}-.0327691{col 67}{space 3} .0265623
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+race: race_in1 race_in2 race_in3
+ideo: ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5
+region: region_in1 region_in2 region_in3 region_in4
+
+{com}. 
+. ********************************************************************************
+. *Supplemental Analysis Using Linear Probability Models
+. *Appendix D Output: 
+. 
+. svy: regress pol_p1_no i.sex1 i.race3 i.rural5 i.ideo2 i.sch_c3 i.p_edu_n3 vic i.region2 happy1_n care_soc1_n if cohort2==1
+{res}{txt}(running {bf:regress} on estimation sample)
+{res}
+{txt}Survey: Linear regression
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 53}{lalign 15:Number of obs}{col 68} = {res}{ralign 8:29,305}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:29,305}{txt}{col 53}{lalign 15:Population size}{col 68} = {res}{ralign 8:28,722.6}
+{txt}{col 53}{lalign 15:Design df}{col 68} = {res}{ralign 8:29,304}
+{txt}{col 53}{lalign 15:F({res:21}, {res:29284})}{col 68} = {res}{ralign 8:16.11}
+{txt}{col 53}{lalign 15:Prob > F}{col 68} = {res}{ralign 8:0.0000}
+{txt}{col 53}{lalign 15:R-squared}{col 68} = {res}{ralign 8:0.0212}
+
+{txt}{hline 32}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 33}{c |}{col 45}  Linearized
+{col 1}                      pol_p1_no{col 33}{c |} Coefficient{col 45}  std. err.{col 57}      t{col 65}   P>|t|{col 73}     [95% con{col 86}f. interval]
+{hline 32}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 27}sex1 {c |}
+{space 25}Women  {c |}{col 33}{res}{space 2} .0062593{col 45}{space 2} .0026344{col 56}{space 1}    2.38{col 65}{space 3}0.018{col 73}{space 4} .0010957{col 86}{space 3} .0114229
+{txt}{space 31} {c |}
+{space 26}race3 {c |}
+{space 25}Black  {c |}{col 33}{res}{space 2}  .036258{col 45}{space 2} .0053789{col 56}{space 1}    6.74{col 65}{space 3}0.000{col 73}{space 4} .0257152{col 86}{space 3} .0468008
+{txt}{space 25}Other  {c |}{col 33}{res}{space 2} .0200555{col 45}{space 2}  .005684{col 56}{space 1}    3.53{col 65}{space 3}0.000{col 73}{space 4} .0089145{col 86}{space 3} .0311965
+{txt}{space 31} {c |}
+{space 25}rural5 {c |}
+{space 20}small city  {c |}{col 33}{res}{space 2} .0050735{col 45}{space 2} .0040469{col 56}{space 1}    1.25{col 65}{space 3}0.210{col 73}{space 4}-.0028586{col 86}{space 3} .0130055
+{txt}{space 2}medium city (50,000-100,000)  {c |}{col 33}{res}{space 2}-.0027517{col 45}{space 2} .0039903{col 56}{space 1}   -0.69{col 65}{space 3}0.490{col 73}{space 4}-.0105729{col 86}{space 3} .0050695
+{txt}{space 2}large city (100,000-500,000)  {c |}{col 33}{res}{space 2}-.0026703{col 45}{space 2} .0042823{col 56}{space 1}   -0.62{col 65}{space 3}0.533{col 73}{space 4}-.0110638{col 86}{space 3} .0057233
+{txt}very large city (over 500,000)  {c |}{col 33}{res}{space 2}-.0003992{col 45}{space 2} .0052831{col 56}{space 1}   -0.08{col 65}{space 3}0.940{col 73}{space 4}-.0107543{col 86}{space 3} .0099559
+{txt}{space 31} {c |}
+{space 26}ideo2 {c |}
+{space 22}moderate  {c |}{col 33}{res}{space 2}-.0102721{col 45}{space 2} .0033737{col 56}{space 1}   -3.04{col 65}{space 3}0.002{col 73}{space 4}-.0168847{col 86}{space 3}-.0036595
+{txt}{space 27}lib  {c |}{col 33}{res}{space 2}-.0059116{col 45}{space 2} .0037953{col 56}{space 1}   -1.56{col 65}{space 3}0.119{col 73}{space 4}-.0133505{col 86}{space 3} .0015274
+{txt}{space 23}radical  {c |}{col 33}{res}{space 2} .0201746{col 45}{space 2} .0098989{col 56}{space 1}    2.04{col 65}{space 3}0.042{col 73}{space 4} .0007723{col 86}{space 3} .0395768
+{txt}{space 20}don't know  {c |}{col 33}{res}{space 2} .0344869{col 45}{space 2} .0044243{col 56}{space 1}    7.79{col 65}{space 3}0.000{col 73}{space 4} .0258151{col 86}{space 3} .0431587
+{txt}{space 31} {c |}
+{space 25}sch_c3 {c |}
+{space 15}missed 1-2 days  {c |}{col 33}{res}{space 2}-.0056545{col 45}{space 2} .0031471{col 56}{space 1}   -1.80{col 65}{space 3}0.072{col 73}{space 4} -.011823{col 86}{space 3}  .000514
+{txt}{space 17}missed 3+days  {c |}{col 33}{res}{space 2} .0093741{col 45}{space 2} .0050765{col 56}{space 1}    1.85{col 65}{space 3}0.065{col 73}{space 4}-.0005761{col 86}{space 3} .0193242
+{txt}{space 31} {c |}
+{space 23}p_edu_n3 {c |}
+{space 22}high sch  {c |}{col 33}{res}{space 2} .0034012{col 45}{space 2} .0026878{col 56}{space 1}    1.27{col 65}{space 3}0.206{col 73}{space 4}-.0018669{col 86}{space 3} .0086693
+{txt}{space 11}lower than high sch  {c |}{col 33}{res}{space 2} .0110634{col 45}{space 2} .0050179{col 56}{space 1}    2.20{col 65}{space 3}0.027{col 73}{space 4} .0012281{col 86}{space 3} .0208988
+{txt}{space 31} {c |}
+{space 28}vic {c |}{col 33}{res}{space 2}-.0056791{col 45}{space 2} .0026286{col 56}{space 1}   -2.16{col 65}{space 3}0.031{col 73}{space 4}-.0108312{col 86}{space 3} -.000527
+{txt}{space 31} {c |}
+{space 24}region2 {c |}
+{space 29}2  {c |}{col 33}{res}{space 2} .0012407{col 45}{space 2} .0036069{col 56}{space 1}    0.34{col 65}{space 3}0.731{col 73}{space 4} -.005829{col 86}{space 3} .0083105
+{txt}{space 29}3  {c |}{col 33}{res}{space 2}-.0005369{col 45}{space 2} .0034002{col 56}{space 1}   -0.16{col 65}{space 3}0.875{col 73}{space 4}-.0072014{col 86}{space 3} .0061276
+{txt}{space 29}4  {c |}{col 33}{res}{space 2} .0015412{col 45}{space 2} .0039956{col 56}{space 1}    0.39{col 65}{space 3}0.700{col 73}{space 4}-.0062902{col 86}{space 3} .0093727
+{txt}{space 31} {c |}
+{space 23}happy1_n {c |}{col 33}{res}{space 2}-.0066492{col 45}{space 2} .0024868{col 56}{space 1}   -2.67{col 65}{space 3}0.008{col 73}{space 4}-.0115234{col 86}{space 3} -.001775
+{txt}{space 20}care_soc1_n {c |}{col 33}{res}{space 2}-.0145616{col 45}{space 2} .0018954{col 56}{space 1}   -7.68{col 65}{space 3}0.000{col 73}{space 4}-.0182767{col 86}{space 3}-.0108466
+{txt}{space 26}_cons {c |}{col 33}{res}{space 2} .0863352{col 45}{space 2} .0100755{col 56}{space 1}    8.57{col 65}{space 3}0.000{col 73}{space 4} .0665867{col 86}{space 3} .1060837
+{txt}{hline 32}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store m1, title("C1980")
+{txt}
+{com}. svy: regress pol_p1_no i.sex1 i.race3 i.rural5 i.ideo2 i.sch_c3 i.p_edu_n3 vic i.region2 happy1_n care_soc1_n if cohort2==2
+{res}{txt}(running {bf:regress} on estimation sample)
+{res}
+{txt}Survey: Linear regression
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 51}{lalign 15:Number of obs}{col 66} = {res}{ralign 10:18,287}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:18,287}{txt}{col 51}{lalign 15:Population size}{col 66} = {res}{ralign 10:18,139.936}
+{txt}{col 51}{lalign 15:Design df}{col 66} = {res}{ralign 10:18,286}
+{txt}{col 51}{lalign 15:F({res:21}, {res:18266})}{col 66} = {res}{ralign 10:31.63}
+{txt}{col 51}{lalign 15:Prob > F}{col 66} = {res}{ralign 10:0.0000}
+{txt}{col 51}{lalign 15:R-squared}{col 66} = {res}{ralign 10:0.0511}
+
+{txt}{hline 32}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 33}{c |}{col 45}  Linearized
+{col 1}                      pol_p1_no{col 33}{c |} Coefficient{col 45}  std. err.{col 57}      t{col 65}   P>|t|{col 73}     [95% con{col 86}f. interval]
+{hline 32}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 27}sex1 {c |}
+{space 25}Women  {c |}{col 33}{res}{space 2}  .042021{col 45}{space 2} .0058805{col 56}{space 1}    7.15{col 65}{space 3}0.000{col 73}{space 4} .0304946{col 86}{space 3} .0535474
+{txt}{space 31} {c |}
+{space 26}race3 {c |}
+{space 25}Black  {c |}{col 33}{res}{space 2} .0486609{col 45}{space 2} .0113724{col 56}{space 1}    4.28{col 65}{space 3}0.000{col 73}{space 4}   .02637{col 86}{space 3} .0709518
+{txt}{space 25}Other  {c |}{col 33}{res}{space 2} .0191544{col 45}{space 2} .0073633{col 56}{space 1}    2.60{col 65}{space 3}0.009{col 73}{space 4} .0047215{col 86}{space 3} .0335872
+{txt}{space 31} {c |}
+{space 25}rural5 {c |}
+{space 20}small city  {c |}{col 33}{res}{space 2} .0121613{col 45}{space 2}  .008934{col 56}{space 1}    1.36{col 65}{space 3}0.173{col 73}{space 4}-.0053501{col 86}{space 3} .0296727
+{txt}{space 2}medium city (50,000-100,000)  {c |}{col 33}{res}{space 2} .0066062{col 45}{space 2} .0090261{col 56}{space 1}    0.73{col 65}{space 3}0.464{col 73}{space 4}-.0110858{col 86}{space 3} .0242983
+{txt}{space 2}large city (100,000-500,000)  {c |}{col 33}{res}{space 2} .0212639{col 45}{space 2} .0102679{col 56}{space 1}    2.07{col 65}{space 3}0.038{col 73}{space 4} .0011379{col 86}{space 3} .0413899
+{txt}very large city (over 500,000)  {c |}{col 33}{res}{space 2} .0126241{col 45}{space 2} .0119714{col 56}{space 1}    1.05{col 65}{space 3}0.292{col 73}{space 4}-.0108409{col 86}{space 3} .0360891
+{txt}{space 31} {c |}
+{space 26}ideo2 {c |}
+{space 22}moderate  {c |}{col 33}{res}{space 2}-.0045281{col 45}{space 2} .0074899{col 56}{space 1}   -0.60{col 65}{space 3}0.545{col 73}{space 4}-.0192089{col 86}{space 3} .0101528
+{txt}{space 27}lib  {c |}{col 33}{res}{space 2} .0175613{col 45}{space 2} .0084357{col 56}{space 1}    2.08{col 65}{space 3}0.037{col 73}{space 4} .0010265{col 86}{space 3} .0340961
+{txt}{space 23}radical  {c |}{col 33}{res}{space 2} .0642772{col 45}{space 2} .0245918{col 56}{space 1}    2.61{col 65}{space 3}0.009{col 73}{space 4}  .016075{col 86}{space 3} .1124794
+{txt}{space 20}don't know  {c |}{col 33}{res}{space 2} .1026035{col 45}{space 2} .0083684{col 56}{space 1}   12.26{col 65}{space 3}0.000{col 73}{space 4} .0862006{col 86}{space 3} .1190064
+{txt}{space 31} {c |}
+{space 25}sch_c3 {c |}
+{space 15}missed 1-2 days  {c |}{col 33}{res}{space 2}-.0122746{col 45}{space 2} .0070005{col 56}{space 1}   -1.75{col 65}{space 3}0.080{col 73}{space 4}-.0259963{col 86}{space 3} .0014471
+{txt}{space 17}missed 3+days  {c |}{col 33}{res}{space 2}  .024232{col 45}{space 2} .0110863{col 56}{space 1}    2.19{col 65}{space 3}0.029{col 73}{space 4} .0025017{col 86}{space 3} .0459622
+{txt}{space 31} {c |}
+{space 23}p_edu_n3 {c |}
+{space 22}high sch  {c |}{col 33}{res}{space 2}-.0061566{col 45}{space 2} .0062669{col 56}{space 1}   -0.98{col 65}{space 3}0.326{col 73}{space 4}-.0184404{col 86}{space 3} .0061272
+{txt}{space 11}lower than high sch  {c |}{col 33}{res}{space 2} .0040902{col 45}{space 2} .0123034{col 56}{space 1}    0.33{col 65}{space 3}0.740{col 73}{space 4}-.0200256{col 86}{space 3}  .028206
+{txt}{space 31} {c |}
+{space 28}vic {c |}{col 33}{res}{space 2}-.0241863{col 45}{space 2} .0059214{col 56}{space 1}   -4.08{col 65}{space 3}0.000{col 73}{space 4}-.0357928{col 86}{space 3}-.0125798
+{txt}{space 31} {c |}
+{space 24}region2 {c |}
+{space 29}2  {c |}{col 33}{res}{space 2}-.0014457{col 45}{space 2} .0087672{col 56}{space 1}   -0.16{col 65}{space 3}0.869{col 73}{space 4}-.0186302{col 86}{space 3} .0157388
+{txt}{space 29}3  {c |}{col 33}{res}{space 2}  .005735{col 45}{space 2}  .007785{col 56}{space 1}    0.74{col 65}{space 3}0.461{col 73}{space 4}-.0095244{col 86}{space 3} .0209944
+{txt}{space 29}4  {c |}{col 33}{res}{space 2}-.0090353{col 45}{space 2} .0088373{col 56}{space 1}   -1.02{col 65}{space 3}0.307{col 73}{space 4}-.0263573{col 86}{space 3} .0082866
+{txt}{space 31} {c |}
+{space 23}happy1_n {c |}{col 33}{res}{space 2}-.0061151{col 45}{space 2} .0047871{col 56}{space 1}   -1.28{col 65}{space 3}0.201{col 73}{space 4}-.0154983{col 86}{space 3} .0032681
+{txt}{space 20}care_soc1_n {c |}{col 33}{res}{space 2}-.0441274{col 45}{space 2} .0033958{col 56}{space 1}  -12.99{col 65}{space 3}0.000{col 73}{space 4}-.0507835{col 86}{space 3}-.0374712
+{txt}{space 26}_cons {c |}{col 33}{res}{space 2} .2162143{col 45}{space 2} .0192457{col 56}{space 1}   11.23{col 65}{space 3}0.000{col 73}{space 4} .1784908{col 86}{space 3} .2539377
+{txt}{hline 32}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store m2, title("C2015")
+{txt}
+{com}. cd "C:\Users\yunmeilu\Box\MTF police\No opinion project\output"
+{res}C:\Users\yunmeilu\Box\MTF police\No opinion project\output
+{txt}
+{com}. esttab m1 m2 using sup_linearprob.csv, cells(b(star fmt(3)) se(par fmt(3))) stats(N, fmt(a)) 
+{res}{err}{p 0 4 2}
+file {bf:{err}sup_linearprob.csv}
+already exists
+{p_end}
+{txt}{search r(602), local:r(602);}
+
+end of do-file
+
+{search r(602), local:r(602);}
+
+{com}. do "C:\Users\yunmeilu\AppData\Local\Temp\STD6ecc_00000d.tmp"
+{txt}
+{com}. oaxaca pol_p1_no (race: normalize(b.race_in1 race_in2 race_in3)) sex1 rural5 sch_c3 p_edu_n vic (ideo: normalize(b.ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5)) (region: normalize(b.region_in1 region_in2 region_in3 region_in4)) happy1_n care_soc1_n, by (cohort2) svy threefold detail
+{res}{txt}(normalized: race_in1 race_in2 race_in3, ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5, region_in1 region_in2 region_in3 region_in4)
+{res}
+{txt}Blinder-Oaxaca decomposition
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 49}{lalign 17:Number of obs}{col 66} = {res}{ralign 10:47,592}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:47,592}{txt}{col 49}{lalign 17:Population size}{col 66} = {res}{ralign 10:46,862.536}
+{txt}{col 49}{lalign 17:Design df}{col 66} = {res}{ralign 10:47,591}
+{txt}{col 49}Model{col 67}={col 69}    {res}linear
+{txt}Group 1: cohort2 = {res}1{txt}{col 49}N of obs 1{col 67}={col 69}{res}    29,305
+{txt}Group 2: cohort2 = {res}2{txt}{col 49}N of obs 2{col 67}={col 69}{res}    18,287
+
+{txt}   endowments: (X1 - X2) * {bf:b2}
+ coefficients: {bf:X2} * (b1 - b2)
+  interaction: (X1 - X2) * (b1 - b2)
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}  Linearized
+{col 1}   pol_p1_no{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}overall      {txt}{c |}
+{space 5}group_1 {c |}{col 14}{res}{space 2} .0420923{col 26}{space 2} .0013275{col 37}{space 1}   31.71{col 46}{space 3}0.000{col 54}{space 4} .0394903{col 67}{space 3} .0446943
+{txt}{space 5}group_2 {c |}{col 14}{res}{space 2} .1356233{col 26}{space 2} .0029794{col 37}{space 1}   45.52{col 46}{space 3}0.000{col 54}{space 4} .1297837{col 67}{space 3}  .141463
+{txt}{space 2}difference {c |}{col 14}{res}{space 2} -.093531{col 26}{space 2} .0032618{col 37}{space 1}  -28.68{col 46}{space 3}0.000{col 54}{space 4}-.0999241{col 67}{space 3}-.0871379
+{txt}{space 2}endowments {c |}{col 14}{res}{space 2} -.016195{col 26}{space 2} .0024479{col 37}{space 1}   -6.62{col 46}{space 3}0.000{col 54}{space 4} -.020993{col 67}{space 3}-.0113971
+{txt}coefficients {c |}{col 14}{res}{space 2}-.0865628{col 26}{space 2} .0035829{col 37}{space 1}  -24.16{col 46}{space 3}0.000{col 54}{space 4}-.0935854{col 67}{space 3}-.0795402
+{txt}{space 1}interaction {c |}{col 14}{res}{space 2} .0092268{col 26}{space 2} .0027652{col 37}{space 1}    3.34{col 46}{space 3}0.001{col 54}{space 4}  .003807{col 67}{space 3} .0146466
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}endowments   {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}  -.00464{col 26}{space 2} .0016127{col 37}{space 1}   -2.88{col 46}{space 3}0.004{col 54}{space 4}-.0078009{col 67}{space 3}-.0014791
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0000264{col 26}{space 2} .0002324{col 37}{space 1}   -0.11{col 46}{space 3}0.910{col 54}{space 4}-.0004819{col 67}{space 3} .0004292
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} -.000376{col 26}{space 2} .0002699{col 37}{space 1}   -1.39{col 46}{space 3}0.164{col 54}{space 4}-.0009051{col 67}{space 3}  .000153
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2} -.000038{col 26}{space 2} .0000508{col 37}{space 1}   -0.75{col 46}{space 3}0.455{col 54}{space 4}-.0001376{col 67}{space 3} .0000616
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0009832{col 26}{space 2} .0011656{col 37}{space 1}   -0.84{col 46}{space 3}0.399{col 54}{space 4}-.0032679{col 67}{space 3} .0013014
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0002649{col 26}{space 2} .0001448{col 37}{space 1}    1.83{col 46}{space 3}0.067{col 54}{space 4}-.0000189{col 67}{space 3} .0005486
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0081324{col 26}{space 2} .0008876{col 37}{space 1}   -9.16{col 46}{space 3}0.000{col 54}{space 4}-.0098721{col 67}{space 3}-.0063927
+{txt}{space 6}region {c |}{col 14}{res}{space 2} .0002164{col 26}{space 2} .0008076{col 37}{space 1}    0.27{col 46}{space 3}0.789{col 54}{space 4}-.0013665{col 67}{space 3} .0017992
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2} .0000692{col 26}{space 2} .0000665{col 37}{space 1}    1.04{col 46}{space 3}0.299{col 54}{space 4}-.0000613{col 67}{space 3} .0001996
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}-.0025494{col 26}{space 2} .0004629{col 37}{space 1}   -5.51{col 46}{space 3}0.000{col 54}{space 4}-.0034568{col 67}{space 3} -.001642
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}coefficients {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2} .0031414{col 26}{space 2} .0028784{col 37}{space 1}    1.09{col 46}{space 3}0.275{col 54}{space 4}-.0025002{col 67}{space 3} .0087831
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0547606{col 26}{space 2} .0097442{col 37}{space 1}   -5.62{col 46}{space 3}0.000{col 54}{space 4}-.0738594{col 67}{space 3}-.0356617
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2}-.0127127{col 26}{space 2} .0075508{col 37}{space 1}   -1.68{col 46}{space 3}0.092{col 54}{space 4}-.0275124{col 67}{space 3} .0020869
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0013619{col 26}{space 2} .0020083{col 37}{space 1}   -0.68{col 46}{space 3}0.498{col 54}{space 4}-.0052982{col 67}{space 3} .0025744
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0216724{col 26}{space 2} .0116238{col 37}{space 1}   -1.86{col 46}{space 3}0.062{col 54}{space 4}-.0444552{col 67}{space 3} .0011104
+{txt}{space 9}vic {c |}{col 14}{res}{space 2}  .007225{col 26}{space 2} .0025021{col 37}{space 1}    2.89{col 46}{space 3}0.004{col 54}{space 4} .0023207{col 67}{space 3} .0121292
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0028955{col 26}{space 2} .0049175{col 37}{space 1}   -0.59{col 46}{space 3}0.556{col 54}{space 4}-.0125338{col 67}{space 3} .0067428
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0011619{col 26}{space 2}  .000874{col 37}{space 1}   -1.33{col 46}{space 3}0.184{col 54}{space 4}-.0028748{col 67}{space 3} .0005511
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}-.0009174{col 26}{space 2} .0111906{col 37}{space 1}   -0.08{col 46}{space 3}0.935{col 54}{space 4}-.0228511{col 67}{space 3} .0210164
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2} .0948299{col 26}{space 2} .0122826{col 37}{space 1}    7.72{col 46}{space 3}0.000{col 54}{space 4} .0707559{col 67}{space 3}  .118904
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.0962769{col 26}{space 2} .0255154{col 37}{space 1}   -3.77{col 46}{space 3}0.000{col 54}{space 4}-.1462873{col 67}{space 3}-.0462664
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}interaction  {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2} .0003573{col 26}{space 2} .0020402{col 37}{space 1}    0.18{col 46}{space 3}0.861{col 54}{space 4}-.0036416{col 67}{space 3} .0043562
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2} .0000225{col 26}{space 2} .0001982{col 37}{space 1}    0.11{col 46}{space 3}0.910{col 54}{space 4} -.000366{col 67}{space 3} .0004109
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} .0004858{col 26}{space 2} .0002954{col 37}{space 1}    1.64{col 46}{space 3}0.100{col 54}{space 4}-.0000931{col 67}{space 3} .0010647
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2} .0000256{col 26}{space 2} .0000454{col 37}{space 1}    0.56{col 46}{space 3}0.573{col 54}{space 4}-.0000634{col 67}{space 3} .0001146
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} .0023436{col 26}{space 2} .0012591{col 37}{space 1}    1.86{col 46}{space 3}0.063{col 54}{space 4}-.0001242{col 67}{space 3} .0048114
+{txt}{space 9}vic {c |}{col 14}{res}{space 2}-.0002033{col 26}{space 2} .0001219{col 37}{space 1}   -1.67{col 46}{space 3}0.095{col 54}{space 4}-.0004423{col 67}{space 3} .0000356
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2} .0046811{col 26}{space 2} .0008531{col 37}{space 1}    5.49{col 46}{space 3}0.000{col 54}{space 4}  .003009{col 67}{space 3} .0063532
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0002147{col 26}{space 2}  .000883{col 37}{space 1}   -0.24{col 46}{space 3}0.808{col 54}{space 4}-.0019454{col 67}{space 3}  .001516
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2} 4.94e-06{col 26}{space 2} .0000603{col 37}{space 1}    0.08{col 46}{space 3}0.935{col 54}{space 4}-.0001133{col 67}{space 3} .0001232
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}  .001724{col 26}{space 2} .0003612{col 37}{space 1}    4.77{col 46}{space 3}0.000{col 54}{space 4}  .001016{col 67}{space 3}  .002432
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+race: race_in1 race_in2 race_in3
+ideo: ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5
+region: region_in1 region_in2 region_in3 region_in4
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\yunmeilu\AppData\Local\Temp\STD6ecc_00000e.tmp"
+{txt}
+{com}. *Decomposition with linear probability model
+. oaxaca pol_p1_no (race: normalize(b.race_in1 race_in2 race_in3)) sex1 rural5 sch_c3 p_edu_n vic (ideo: normalize(b.ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5)) (region: normalize(b.region_in1 region_in2 region_in3 region_in4)) happy1_n care_soc1_n, by (cohort2) svy threefold(reverse) detail
+{res}{txt}(normalized: race_in1 race_in2 race_in3, ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5, region_in1 region_in2 region_in3 region_in4)
+{res}
+{txt}Blinder-Oaxaca decomposition
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 49}{lalign 17:Number of obs}{col 66} = {res}{ralign 10:47,592}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:47,592}{txt}{col 49}{lalign 17:Population size}{col 66} = {res}{ralign 10:46,862.536}
+{txt}{col 49}{lalign 17:Design df}{col 66} = {res}{ralign 10:47,591}
+{txt}{col 49}Model{col 67}={col 69}    {res}linear
+{txt}Group 1: cohort2 = {res}1{txt}{col 49}N of obs 1{col 67}={col 69}{res}    29,305
+{txt}Group 2: cohort2 = {res}2{txt}{col 49}N of obs 2{col 67}={col 69}{res}    18,287
+
+{txt}   endowments: (X1 - X2) * {bf:b1}
+ coefficients: {bf:X1} * (b1 - b2)
+  interaction: (X1 - X2) * (b2 - b1)
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}  Linearized
+{col 1}   pol_p1_no{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}overall      {txt}{c |}
+{space 5}group_1 {c |}{col 14}{res}{space 2} .0420923{col 26}{space 2} .0013275{col 37}{space 1}   31.71{col 46}{space 3}0.000{col 54}{space 4} .0394903{col 67}{space 3} .0446943
+{txt}{space 5}group_2 {c |}{col 14}{res}{space 2} .1356233{col 26}{space 2} .0029794{col 37}{space 1}   45.52{col 46}{space 3}0.000{col 54}{space 4} .1297837{col 67}{space 3}  .141463
+{txt}{space 2}difference {c |}{col 14}{res}{space 2} -.093531{col 26}{space 2} .0032618{col 37}{space 1}  -28.68{col 46}{space 3}0.000{col 54}{space 4}-.0999241{col 67}{space 3}-.0871379
+{txt}{space 2}endowments {c |}{col 14}{res}{space 2}-.0069682{col 26}{space 2} .0014681{col 37}{space 1}   -4.75{col 46}{space 3}0.000{col 54}{space 4}-.0098456{col 67}{space 3}-.0040908
+{txt}coefficients {c |}{col 14}{res}{space 2} -.077336{col 26}{space 2} .0037452{col 37}{space 1}  -20.65{col 46}{space 3}0.000{col 54}{space 4}-.0846766{col 67}{space 3}-.0699954
+{txt}{space 1}interaction {c |}{col 14}{res}{space 2}-.0092268{col 26}{space 2} .0027652{col 37}{space 1}   -3.34{col 46}{space 3}0.001{col 54}{space 4}-.0146466{col 67}{space 3} -.003807
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}endowments   {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0042827{col 26}{space 2} .0012696{col 37}{space 1}   -3.37{col 46}{space 3}0.001{col 54}{space 4}-.0067711{col 67}{space 3}-.0017943
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-3.88e-06{col 26}{space 2} .0000343{col 37}{space 1}   -0.11{col 46}{space 3}0.910{col 54}{space 4}-.0000711{col 67}{space 3} .0000633
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} .0001098{col 26}{space 2}  .000114{col 37}{space 1}    0.96{col 46}{space 3}0.336{col 54}{space 4}-.0001136{col 67}{space 3} .0003331
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000124{col 26}{space 2} .0000198{col 37}{space 1}   -0.63{col 46}{space 3}0.532{col 54}{space 4}-.0000512{col 67}{space 3} .0000264
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} .0013604{col 26}{space 2} .0004733{col 37}{space 1}    2.87{col 46}{space 3}0.004{col 54}{space 4} .0004327{col 67}{space 3}  .002288
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0000615{col 26}{space 2} .0000415{col 37}{space 1}    1.48{col 46}{space 3}0.138{col 54}{space 4}-.0000198{col 67}{space 3} .0001429
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0034513{col 26}{space 2} .0003946{col 37}{space 1}   -8.75{col 46}{space 3}0.000{col 54}{space 4}-.0042247{col 67}{space 3} -.002678
+{txt}{space 6}region {c |}{col 14}{res}{space 2} 1.68e-06{col 26}{space 2} .0003555{col 37}{space 1}    0.00{col 46}{space 3}0.996{col 54}{space 4} -.000695{col 67}{space 3} .0006984
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2} .0000741{col 26}{space 2} .0000507{col 37}{space 1}    1.46{col 46}{space 3}0.144{col 54}{space 4}-.0000253{col 67}{space 3} .0001735
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}-.0008254{col 26}{space 2} .0001741{col 37}{space 1}   -4.74{col 46}{space 3}0.000{col 54}{space 4}-.0011666{col 67}{space 3}-.0004841
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}coefficients {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2} .0034987{col 26}{space 2} .0039136{col 37}{space 1}    0.89{col 46}{space 3}0.371{col 54}{space 4}-.0041719{col 67}{space 3} .0111693
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0547381{col 26}{space 2} .0097397{col 37}{space 1}   -5.62{col 46}{space 3}0.000{col 54}{space 4}-.0738281{col 67}{space 3}-.0356481
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2}-.0122269{col 26}{space 2} .0072622{col 37}{space 1}   -1.68{col 46}{space 3}0.092{col 54}{space 4}-.0264609{col 67}{space 3} .0020071
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0013363{col 26}{space 2} .0019705{col 37}{space 1}   -0.68{col 46}{space 3}0.498{col 54}{space 4}-.0051985{col 67}{space 3}  .002526
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0193288{col 26}{space 2} .0103668{col 37}{space 1}   -1.86{col 46}{space 3}0.062{col 54}{space 4}-.0396478{col 67}{space 3} .0009902
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0070216{col 26}{space 2} .0024313{col 37}{space 1}    2.89{col 46}{space 3}0.004{col 54}{space 4} .0022563{col 67}{space 3} .0117869
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2} .0017856{col 26}{space 2} .0045775{col 37}{space 1}    0.39{col 46}{space 3}0.696{col 54}{space 4}-.0071864{col 67}{space 3} .0107576
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0013766{col 26}{space 2} .0008036{col 37}{space 1}   -1.71{col 46}{space 3}0.087{col 54}{space 4}-.0029516{col 67}{space 3} .0001985
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}-.0009124{col 26}{space 2} .0111304{col 37}{space 1}   -0.08{col 46}{space 3}0.935{col 54}{space 4}-.0227281{col 67}{space 3} .0209032
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}  .096554{col 26}{space 2} .0125046{col 37}{space 1}    7.72{col 46}{space 3}0.000{col 54}{space 4} .0720448{col 67}{space 3} .1210632
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.0962769{col 26}{space 2} .0255154{col 37}{space 1}   -3.77{col 46}{space 3}0.000{col 54}{space 4}-.1462873{col 67}{space 3}-.0462664
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}interaction  {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0003573{col 26}{space 2} .0020402{col 37}{space 1}   -0.18{col 46}{space 3}0.861{col 54}{space 4}-.0043562{col 67}{space 3} .0036416
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0000225{col 26}{space 2} .0001982{col 37}{space 1}   -0.11{col 46}{space 3}0.910{col 54}{space 4}-.0004109{col 67}{space 3}  .000366
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2}-.0004858{col 26}{space 2} .0002954{col 37}{space 1}   -1.64{col 46}{space 3}0.100{col 54}{space 4}-.0010647{col 67}{space 3} .0000931
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000256{col 26}{space 2} .0000454{col 37}{space 1}   -0.56{col 46}{space 3}0.573{col 54}{space 4}-.0001146{col 67}{space 3} .0000634
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0023436{col 26}{space 2} .0012591{col 37}{space 1}   -1.86{col 46}{space 3}0.063{col 54}{space 4}-.0048114{col 67}{space 3} .0001242
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0002033{col 26}{space 2} .0001219{col 37}{space 1}    1.67{col 46}{space 3}0.095{col 54}{space 4}-.0000356{col 67}{space 3} .0004423
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0046811{col 26}{space 2} .0008531{col 37}{space 1}   -5.49{col 46}{space 3}0.000{col 54}{space 4}-.0063532{col 67}{space 3} -.003009
+{txt}{space 6}region {c |}{col 14}{res}{space 2} .0002147{col 26}{space 2}  .000883{col 37}{space 1}    0.24{col 46}{space 3}0.808{col 54}{space 4} -.001516{col 67}{space 3} .0019454
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}-4.94e-06{col 26}{space 2} .0000603{col 37}{space 1}   -0.08{col 46}{space 3}0.935{col 54}{space 4}-.0001232{col 67}{space 3} .0001133
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2} -.001724{col 26}{space 2} .0003612{col 37}{space 1}   -4.77{col 46}{space 3}0.000{col 54}{space 4} -.002432{col 67}{space 3} -.001016
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+race: race_in1 race_in2 race_in3
+ideo: ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5
+region: region_in1 region_in2 region_in3 region_in4
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\yunmeilu\AppData\Local\Temp\STD6ecc_00000f.tmp"
+{txt}
+{com}. oaxaca pol_p1_no (race: normalize(b.race_in1 race_in2 race_in3)) sex1 rural5 sch_c3 p_edu_n vic (ideo: normalize(b.ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5)) (region: normalize(b.region_in1 region_in2 region_in3 region_in4)) happy1_n care_soc1_n, by (cohort2) svy logit threefold(reverse) detail
+{res}{txt}(normalized: race_in1 race_in2 race_in3, ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5, region_in1 region_in2 region_in3 region_in4)
+{res}
+{txt}Blinder-Oaxaca decomposition
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 49}{lalign 17:Number of obs}{col 66} = {res}{ralign 10:47,592}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:47,592}{txt}{col 49}{lalign 17:Population size}{col 66} = {res}{ralign 10:46,862.536}
+{txt}{col 49}{lalign 17:Design df}{col 66} = {res}{ralign 10:47,591}
+{txt}{col 49}Model{col 67}={col 69}     {res}logit
+{txt}Group 1: cohort2 = {res}1{txt}{col 49}N of obs 1{col 67}={col 69}{res}    29,305
+{txt}Group 2: cohort2 = {res}2{txt}{col 49}N of obs 2{col 67}={col 69}{res}    18,287
+
+{txt}   endowments: (X1 - X2) * {bf:b1}
+ coefficients: {bf:X1} * (b1 - b2)
+  interaction: (X1 - X2) * (b2 - b1)
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}  Linearized
+{col 1}   pol_p1_no{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}overall      {txt}{c |}
+{space 5}group_1 {c |}{col 14}{res}{space 2} .0420923{col 26}{space 2} .0013237{col 37}{space 1}   31.80{col 46}{space 3}0.000{col 54}{space 4} .0394979{col 67}{space 3} .0446867
+{txt}{space 5}group_2 {c |}{col 14}{res}{space 2} .1356233{col 26}{space 2} .0029763{col 37}{space 1}   45.57{col 46}{space 3}0.000{col 54}{space 4} .1297897{col 67}{space 3} .1414569
+{txt}{space 2}difference {c |}{col 14}{res}{space 2} -.093531{col 26}{space 2} .0032574{col 37}{space 1}  -28.71{col 46}{space 3}0.000{col 54}{space 4}-.0999155{col 67}{space 3}-.0871465
+{txt}{space 2}endowments {c |}{col 14}{res}{space 2}-.0073184{col 26}{space 2} .0015832{col 37}{space 1}   -4.62{col 46}{space 3}0.000{col 54}{space 4}-.0104215{col 67}{space 3}-.0042154
+{txt}coefficients {c |}{col 14}{res}{space 2}-.0765746{col 26}{space 2} .0036284{col 37}{space 1}  -21.10{col 46}{space 3}0.000{col 54}{space 4}-.0836862{col 67}{space 3} -.069463
+{txt}{space 1}interaction {c |}{col 14}{res}{space 2} -.009638{col 26}{space 2} .0026866{col 37}{space 1}   -3.59{col 46}{space 3}0.000{col 54}{space 4}-.0149038{col 67}{space 3}-.0043723
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}endowments   {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0046025{col 26}{space 2} .0012572{col 37}{space 1}   -3.66{col 46}{space 3}0.000{col 54}{space 4}-.0070666{col 67}{space 3}-.0021385
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-5.29e-06{col 26}{space 2} .0000467{col 37}{space 1}   -0.11{col 46}{space 3}0.910{col 54}{space 4}-.0000969{col 67}{space 3} .0000863
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} .0001654{col 26}{space 2} .0001423{col 37}{space 1}    1.16{col 46}{space 3}0.245{col 54}{space 4}-.0001136{col 67}{space 3} .0004444
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000137{col 26}{space 2} .0000227{col 37}{space 1}   -0.60{col 46}{space 3}0.546{col 54}{space 4}-.0000583{col 67}{space 3} .0000308
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} .0017729{col 26}{space 2} .0006129{col 37}{space 1}    2.89{col 46}{space 3}0.004{col 54}{space 4} .0005715{col 67}{space 3} .0029742
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0000843{col 26}{space 2} .0000559{col 37}{space 1}    1.51{col 46}{space 3}0.132{col 54}{space 4}-.0000253{col 67}{space 3}  .000194
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0038771{col 26}{space 2} .0004451{col 37}{space 1}   -8.71{col 46}{space 3}0.000{col 54}{space 4}-.0047496{col 67}{space 3}-.0030047
+{txt}{space 6}region {c |}{col 14}{res}{space 2} .0000699{col 26}{space 2} .0004438{col 37}{space 1}    0.16{col 46}{space 3}0.875{col 54}{space 4}   -.0008{col 67}{space 3} .0009398
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2} .0000933{col 26}{space 2} .0000632{col 37}{space 1}    1.47{col 46}{space 3}0.140{col 54}{space 4}-.0000307{col 67}{space 3} .0002172
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}-.0010056{col 26}{space 2} .0002207{col 37}{space 1}   -4.56{col 46}{space 3}0.000{col 54}{space 4}-.0014382{col 67}{space 3} -.000573
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}coefficients {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0085581{col 26}{space 2} .0030197{col 37}{space 1}   -2.83{col 46}{space 3}0.005{col 54}{space 4}-.0144767{col 67}{space 3}-.0026394
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0216926{col 26}{space 2} .0085806{col 37}{space 1}   -2.53{col 46}{space 3}0.011{col 54}{space 4}-.0385107{col 67}{space 3}-.0048744
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2}-.0110211{col 26}{space 2} .0061647{col 37}{space 1}   -1.79{col 46}{space 3}0.074{col 54}{space 4} -.023104{col 67}{space 3} .0010618
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000455{col 26}{space 2} .0016124{col 37}{space 1}   -0.03{col 46}{space 3}0.977{col 54}{space 4}-.0032059{col 67}{space 3} .0031148
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0237819{col 26}{space 2} .0083368{col 37}{space 1}   -2.85{col 46}{space 3}0.004{col 54}{space 4}-.0401221{col 67}{space 3}-.0074417
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0016818{col 26}{space 2} .0021945{col 37}{space 1}    0.77{col 46}{space 3}0.443{col 54}{space 4}-.0026194{col 67}{space 3}  .005983
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0019205{col 26}{space 2} .0032563{col 37}{space 1}   -0.59{col 46}{space 3}0.555{col 54}{space 4} -.008303{col 67}{space 3} .0044619
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0010157{col 26}{space 2} .0007386{col 37}{space 1}   -1.38{col 46}{space 3}0.169{col 54}{space 4}-.0024633{col 67}{space 3} .0004319
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}-.0156148{col 26}{space 2} .0100887{col 37}{space 1}   -1.55{col 46}{space 3}0.122{col 54}{space 4}-.0353887{col 67}{space 3} .0041591
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}  .009855{col 26}{space 2} .0114804{col 37}{space 1}    0.86{col 46}{space 3}0.391{col 54}{space 4}-.0126468{col 67}{space 3} .0323567
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.0044613{col 26}{space 2} .0206669{col 37}{space 1}   -0.22{col 46}{space 3}0.829{col 54}{space 4}-.0449687{col 67}{space 3} .0360461
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}interaction  {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0569607{col 26}{space 2} .2370663{col 37}{space 1}   -0.24{col 46}{space 3}0.810{col 54}{space 4}-.5216139{col 67}{space 3} .4076925
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2} .0001571{col 26}{space 2} .0015855{col 37}{space 1}    0.10{col 46}{space 3}0.921{col 54}{space 4}-.0029506{col 67}{space 3} .0032648
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} .0077228{col 26}{space 2} .0354502{col 37}{space 1}    0.22{col 46}{space 3}0.828{col 54}{space 4}-.0617601{col 67}{space 3} .0772058
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2} .0000154{col 26}{space 2} .0005493{col 37}{space 1}    0.03{col 46}{space 3}0.978{col 54}{space 4}-.0010612{col 67}{space 3}  .001092
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} .0508557{col 26}{space 2} .2435598{col 37}{space 1}    0.21{col 46}{space 3}0.835{col 54}{space 4}-.4265248{col 67}{space 3} .5282363
+{txt}{space 9}vic {c |}{col 14}{res}{space 2}-.0008589{col 26}{space 2}  .004066{col 37}{space 1}   -0.21{col 46}{space 3}0.833{col 54}{space 4}-.0088284{col 67}{space 3} .0071106
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0142821{col 26}{space 2} .0627433{col 37}{space 1}   -0.23{col 46}{space 3}0.820{col 54}{space 4}-.1372598{col 67}{space 3} .1086955
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0008817{col 26}{space 2} .0132852{col 37}{space 1}   -0.07{col 46}{space 3}0.947{col 54}{space 4}-.0269208{col 67}{space 3} .0251574
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}  .001491{col 26}{space 2} .0069972{col 37}{space 1}    0.21{col 46}{space 3}0.831{col 54}{space 4}-.0122236{col 67}{space 3} .0152057
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2} .0031034{col 26}{space 2} .0151354{col 37}{space 1}    0.21{col 46}{space 3}0.838{col 54}{space 4}-.0265623{col 67}{space 3} .0327691
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+race: race_in1 race_in2 race_in3
+ideo: ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5
+region: region_in1 region_in2 region_in3 region_in4
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\yunmeilu\AppData\Local\Temp\STD6ecc_00000g.tmp"
+{txt}
+{com}. oaxaca pol_p1_no (race: normalize(b.race_in1 race_in2 race_in3)) sex1 rural5 sch_c3 p_edu_n vic (ideo: normalize(b.ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5)) (region: normalize(b.region_in1 region_in2 region_in3 region_in4)) happy1_n care_soc1_n, by (cohort2) svy logit threefold(reverse) detail
+{res}{txt}(normalized: race_in1 race_in2 race_in3, ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5, region_in1 region_in2 region_in3 region_in4)
+{res}
+{txt}Blinder-Oaxaca decomposition
+
+{col 1}{lalign 16:Number of strata}{col 17} = {res}{ralign 6:1}{txt}{col 49}{lalign 17:Number of obs}{col 66} = {res}{ralign 10:47,592}
+{txt}{col 1}{lalign 16:Number of PSUs}{col 17} = {res}{ralign 6:47,592}{txt}{col 49}{lalign 17:Population size}{col 66} = {res}{ralign 10:46,862.536}
+{txt}{col 49}{lalign 17:Design df}{col 66} = {res}{ralign 10:47,591}
+{txt}{col 49}Model{col 67}={col 69}     {res}logit
+{txt}Group 1: cohort2 = {res}1{txt}{col 49}N of obs 1{col 67}={col 69}{res}    29,305
+{txt}Group 2: cohort2 = {res}2{txt}{col 49}N of obs 2{col 67}={col 69}{res}    18,287
+
+{txt}   endowments: (X1 - X2) * {bf:b1}
+ coefficients: {bf:X1} * (b1 - b2)
+  interaction: (X1 - X2) * (b2 - b1)
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}  Linearized
+{col 1}   pol_p1_no{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}overall      {txt}{c |}
+{space 5}group_1 {c |}{col 14}{res}{space 2} .0420923{col 26}{space 2} .0013237{col 37}{space 1}   31.80{col 46}{space 3}0.000{col 54}{space 4} .0394979{col 67}{space 3} .0446867
+{txt}{space 5}group_2 {c |}{col 14}{res}{space 2} .1356233{col 26}{space 2} .0029763{col 37}{space 1}   45.57{col 46}{space 3}0.000{col 54}{space 4} .1297897{col 67}{space 3} .1414569
+{txt}{space 2}difference {c |}{col 14}{res}{space 2} -.093531{col 26}{space 2} .0032574{col 37}{space 1}  -28.71{col 46}{space 3}0.000{col 54}{space 4}-.0999155{col 67}{space 3}-.0871465
+{txt}{space 2}endowments {c |}{col 14}{res}{space 2}-.0073184{col 26}{space 2} .0015832{col 37}{space 1}   -4.62{col 46}{space 3}0.000{col 54}{space 4}-.0104215{col 67}{space 3}-.0042154
+{txt}coefficients {c |}{col 14}{res}{space 2}-.0765746{col 26}{space 2} .0036284{col 37}{space 1}  -21.10{col 46}{space 3}0.000{col 54}{space 4}-.0836862{col 67}{space 3} -.069463
+{txt}{space 1}interaction {c |}{col 14}{res}{space 2} -.009638{col 26}{space 2} .0026866{col 37}{space 1}   -3.59{col 46}{space 3}0.000{col 54}{space 4}-.0149038{col 67}{space 3}-.0043723
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}endowments   {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0046025{col 26}{space 2} .0012572{col 37}{space 1}   -3.66{col 46}{space 3}0.000{col 54}{space 4}-.0070666{col 67}{space 3}-.0021385
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-5.29e-06{col 26}{space 2} .0000467{col 37}{space 1}   -0.11{col 46}{space 3}0.910{col 54}{space 4}-.0000969{col 67}{space 3} .0000863
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} .0001654{col 26}{space 2} .0001423{col 37}{space 1}    1.16{col 46}{space 3}0.245{col 54}{space 4}-.0001136{col 67}{space 3} .0004444
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000137{col 26}{space 2} .0000227{col 37}{space 1}   -0.60{col 46}{space 3}0.546{col 54}{space 4}-.0000583{col 67}{space 3} .0000308
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} .0017729{col 26}{space 2} .0006129{col 37}{space 1}    2.89{col 46}{space 3}0.004{col 54}{space 4} .0005715{col 67}{space 3} .0029742
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0000843{col 26}{space 2} .0000559{col 37}{space 1}    1.51{col 46}{space 3}0.132{col 54}{space 4}-.0000253{col 67}{space 3}  .000194
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0038771{col 26}{space 2} .0004451{col 37}{space 1}   -8.71{col 46}{space 3}0.000{col 54}{space 4}-.0047496{col 67}{space 3}-.0030047
+{txt}{space 6}region {c |}{col 14}{res}{space 2} .0000699{col 26}{space 2} .0004438{col 37}{space 1}    0.16{col 46}{space 3}0.875{col 54}{space 4}   -.0008{col 67}{space 3} .0009398
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2} .0000933{col 26}{space 2} .0000632{col 37}{space 1}    1.47{col 46}{space 3}0.140{col 54}{space 4}-.0000307{col 67}{space 3} .0002172
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}-.0010056{col 26}{space 2} .0002207{col 37}{space 1}   -4.56{col 46}{space 3}0.000{col 54}{space 4}-.0014382{col 67}{space 3} -.000573
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}coefficients {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0085581{col 26}{space 2} .0030197{col 37}{space 1}   -2.83{col 46}{space 3}0.005{col 54}{space 4}-.0144767{col 67}{space 3}-.0026394
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2}-.0216926{col 26}{space 2} .0085806{col 37}{space 1}   -2.53{col 46}{space 3}0.011{col 54}{space 4}-.0385107{col 67}{space 3}-.0048744
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2}-.0110211{col 26}{space 2} .0061647{col 37}{space 1}   -1.79{col 46}{space 3}0.074{col 54}{space 4} -.023104{col 67}{space 3} .0010618
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2}-.0000455{col 26}{space 2} .0016124{col 37}{space 1}   -0.03{col 46}{space 3}0.977{col 54}{space 4}-.0032059{col 67}{space 3} .0031148
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2}-.0237819{col 26}{space 2} .0083368{col 37}{space 1}   -2.85{col 46}{space 3}0.004{col 54}{space 4}-.0401221{col 67}{space 3}-.0074417
+{txt}{space 9}vic {c |}{col 14}{res}{space 2} .0016818{col 26}{space 2} .0021945{col 37}{space 1}    0.77{col 46}{space 3}0.443{col 54}{space 4}-.0026194{col 67}{space 3}  .005983
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0019205{col 26}{space 2} .0032563{col 37}{space 1}   -0.59{col 46}{space 3}0.555{col 54}{space 4} -.008303{col 67}{space 3} .0044619
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0010157{col 26}{space 2} .0007386{col 37}{space 1}   -1.38{col 46}{space 3}0.169{col 54}{space 4}-.0024633{col 67}{space 3} .0004319
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}-.0156148{col 26}{space 2} .0100887{col 37}{space 1}   -1.55{col 46}{space 3}0.122{col 54}{space 4}-.0353887{col 67}{space 3} .0041591
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2}  .009855{col 26}{space 2} .0114804{col 37}{space 1}    0.86{col 46}{space 3}0.391{col 54}{space 4}-.0126468{col 67}{space 3} .0323567
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.0044613{col 26}{space 2} .0206669{col 37}{space 1}   -0.22{col 46}{space 3}0.829{col 54}{space 4}-.0449687{col 67}{space 3} .0360461
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}interaction  {txt}{c |}
+{space 8}race {c |}{col 14}{res}{space 2}-.0569607{col 26}{space 2} .2370663{col 37}{space 1}   -0.24{col 46}{space 3}0.810{col 54}{space 4}-.5216139{col 67}{space 3} .4076925
+{txt}{space 8}sex1 {c |}{col 14}{res}{space 2} .0001571{col 26}{space 2} .0015855{col 37}{space 1}    0.10{col 46}{space 3}0.921{col 54}{space 4}-.0029506{col 67}{space 3} .0032648
+{txt}{space 6}rural5 {c |}{col 14}{res}{space 2} .0077228{col 26}{space 2} .0354502{col 37}{space 1}    0.22{col 46}{space 3}0.828{col 54}{space 4}-.0617601{col 67}{space 3} .0772058
+{txt}{space 6}sch_c3 {c |}{col 14}{res}{space 2} .0000154{col 26}{space 2} .0005493{col 37}{space 1}    0.03{col 46}{space 3}0.978{col 54}{space 4}-.0010612{col 67}{space 3}  .001092
+{txt}{space 5}p_edu_n {c |}{col 14}{res}{space 2} .0508557{col 26}{space 2} .2435598{col 37}{space 1}    0.21{col 46}{space 3}0.835{col 54}{space 4}-.4265248{col 67}{space 3} .5282363
+{txt}{space 9}vic {c |}{col 14}{res}{space 2}-.0008589{col 26}{space 2}  .004066{col 37}{space 1}   -0.21{col 46}{space 3}0.833{col 54}{space 4}-.0088284{col 67}{space 3} .0071106
+{txt}{space 8}ideo {c |}{col 14}{res}{space 2}-.0142821{col 26}{space 2} .0627433{col 37}{space 1}   -0.23{col 46}{space 3}0.820{col 54}{space 4}-.1372598{col 67}{space 3} .1086955
+{txt}{space 6}region {c |}{col 14}{res}{space 2}-.0008817{col 26}{space 2} .0132852{col 37}{space 1}   -0.07{col 46}{space 3}0.947{col 54}{space 4}-.0269208{col 67}{space 3} .0251574
+{txt}{space 4}happy1_n {c |}{col 14}{res}{space 2}  .001491{col 26}{space 2} .0069972{col 37}{space 1}    0.21{col 46}{space 3}0.831{col 54}{space 4}-.0122236{col 67}{space 3} .0152057
+{txt}{space 1}care_soc1_n {c |}{col 14}{res}{space 2} .0031034{col 26}{space 2} .0151354{col 37}{space 1}    0.21{col 46}{space 3}0.838{col 54}{space 4}-.0265623{col 67}{space 3} .0327691
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+race: race_in1 race_in2 race_in3
+ideo: ideo_in1 ideo_in2 ideo_in3 ideo_in4 ideo_in5
+region: region_in1 region_in2 region_in3 region_in4
+
+{com}. 
+{txt}end of do-file
+
+{com}. 

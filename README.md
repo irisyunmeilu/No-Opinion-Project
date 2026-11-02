@@ -1,6 +1,8 @@
 # No-Opinion-Project
 This repository includes all the coding syntax and log files for our paper "Examining the Increases in Don’t Know Responses about Law Enforcement Among American Youth from 1976 to 2018"
+
 Data: Monitoring the Future 12th Grade Survey Public Data, all the data is publicly available through ICPSR. 
+
 Files: 
 1.	“Setup and package_12th_form3. R” R code for downloading the data and merging data from multiple years
 2.	“Measure and sample_12th_form3.R” R code for cleaning data and coding variables

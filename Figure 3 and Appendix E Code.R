@@ -87,7 +87,7 @@ p1 <- ggplot(
   ) +
   geom_point(
     position = position_dodge(width = 0.15),
-    size = 3
+    size =2
   ) +
   scale_y_continuous(
     labels = scales::percent_format(accuracy = 1)
@@ -133,7 +133,7 @@ p2 <- ggplot(
   ) +
   geom_point(
     position = position_dodge(width = 0.15),
-    size = 3
+    size = 2
   ) +
   scale_y_continuous(
     labels = scales::percent_format(accuracy = 1)
@@ -179,7 +179,7 @@ p3 <- ggplot(
   ) +
   geom_point(
     position = position_dodge(width = 0.15),
-    size = 3
+    size = 2
   ) +
   scale_y_continuous(
     labels = scales::percent_format(accuracy = 1)
@@ -203,19 +203,30 @@ p3
 
 ###############################################################################
 #Combine the three plots
+
 library(gridExtra)
+library(ggplot2)
+
 g <- gridExtra::arrangeGrob(
-  p, p2, p3, 
+  p1, p2, p3,
   ncol = 2
 )
-g
+
 ggsave(
-  filename = "output/Figure3_new.png",
+  filename = "output/figs/Fig3.tif",
   plot = g,
-  width = 9, height = 10, units = "in",
-  dpi = 300
+  width = 7.5,
+  height = 7,
+  units = "in",
+  dpi = 300,
+  device = "tiff",
+  compression = "lzw",
+  bg = "white"
 )
 
+
+
+################################################################################
 #also generate a table for predicted probabilities
 # Define file path (using your dataDir variable)
 file_path <- file.path("C:/Users/yunmeilu/Box/MTF police/No opinion project/output","predicted probability_with_interactions.xlsx")

@@ -106,10 +106,15 @@ fig1<-df_summary %>%
 fig1
 
 ggsave(
-  filename = "no_opinion_trend.png",              # choose any filename/format
-  plot = fig1,                                       # your ggplot object
-  path = "C:/Users/yunmeilu/Box/MTF police/No opinion project",
-  width = 6, height = 3.5, units = "in", dpi = 300  # high resolution for slides
+  filename = "output/figs/Fig1.tif",
+  plot = fig1,
+  width = 6,
+  height = 3.5,
+  units = "in",
+  dpi = 300,
+  device = "tiff",
+  compression = "lzw",
+  bg = "white"
 )
 
 
@@ -301,15 +306,21 @@ fig_all <- grid.arrange(
   nrow = 3    # three rows
 )
 
+
 ggsave(
-  filename = "fig2a.png",
+  filename = "Fig2a.tif",
   plot = fig_all,
   path = figDir,
-  width = 8.27,
-  height = 11.69,
+  width = 7.5,
+  height = 8.75,
   units = "in",
-  dpi = 300
+  dpi = 300,
+  device = "tiff",
+  compression = "lzw",
+  bg = "white"
 )
+
+
 
 
 
@@ -442,11 +453,14 @@ fig_all2 <- grid.arrange(
 fig_all2
 
 ggsave(
-  filename = "fig2b.png",
+  filename = "Fig2b.tif",
   plot = fig_all2,
   path = figDir,
-  width = 8.27,
-  height = 8.69,
+  width = 7.5,
+  height = 7.5,
   units = "in",
-  dpi = 300
+  dpi = 300,
+  device = "tiff",
+  compression = "lzw",
+  bg = "white"
 )

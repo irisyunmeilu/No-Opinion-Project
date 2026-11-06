@@ -205,17 +205,33 @@ p <- plot(effects, dodge = 0.3) +
       "6" = "6. No opinion"
     )
   ) +
-  theme_minimal() +
+  theme_minimal(base_family = "Arial", base_size = 10) +
   theme(
     legend.position = "bottom",
-    legend.title = element_text(face = "bold")
+    legend.title = element_text(
+      face = "bold",
+      size = 10
+    ),
+    legend.text = element_text(size = 9),
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 9),
+    plot.title = element_blank(),
+    panel.grid.minor = element_blank()
   )
 
+# Display figure
 p
+# Export for PLOS ONE
 ggsave(
-  filename = "Figure 4. safe_police perception.png",
+  filename = "output/figs/Fig4.tif",
   plot = p,
-  width = 6, height = 4, units = "in", dpi = 300
+  width = 6,
+  height = 4,
+  units = "in",
+  dpi = 300,
+  device = "tiff",
+  compression = "lzw",
+  bg = "white"
 )
 
 
